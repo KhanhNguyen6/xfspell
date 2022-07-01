@@ -1,19 +1,6 @@
 #!/bin/bash
 
-cat data/gtc/all.tsv | cut -f1 | python src/tokenize.py > data/gtc/all.tok.fr
-cat data/gtc/all.tsv | cut -f2 | python src/tokenize.py > data/gtc/all.tok.en
-
-cat data/gtc/all.tok.fr | awk 'NR%20!=0' > data/gtc/train.tok.fr
-cat data/gtc/all.tok.fr | awk 'NR%20==0' > data/gtc/dev.tok.fr
-
-cat data/gtc/all.tok.en | awk 'NR%20!=0' > data/gtc/train.tok.en
-cat data/gtc/all.tok.en | awk 'NR%20==0' > data/gtc/dev.tok.en
-
-fairseq-preprocess --source-lang fr --target-lang en \
-    --joined-dictionary \
-    --trainpref data/gtc/train.tok \
-    --validpref data/gtc/dev.tok \
-    --destdir bin/gtc
+mkdir -p models
 
 # train AT verifier
 fairseq-train \
@@ -33,7 +20,6 @@ fairseq-train \
     --max-tokens 4096 \
     --save-dir models/at_verifier01 \
     --log-format json --log-interval 10 \
-    --max-epoch 10 \
+    --max-epoch 1 \
      --no-epoch-checkpoints \
     --skip-invalid-size-inputs-valid-test
-
